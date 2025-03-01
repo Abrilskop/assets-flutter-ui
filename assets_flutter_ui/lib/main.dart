@@ -1,79 +1,129 @@
-import 'package:flutter/material.dart'; // Importa el paquete principal de Flutter para construir interfaces de usuario.
-import 'package:flutter/services.dart' show rootBundle; // Importa rootBundle para poder acceder a archivos locales.
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 void main() {
-  runApp(const MyApp()); // Llama a la función runApp para ejecutar la aplicación. Carga el widget MyApp como la raíz de la app.
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key}); // Constructor de la clase MyApp, que es un widget sin estado.
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Notitas UWU', // Define el título de la aplicación, que se muestra en el sistema operativo.
+      title: 'Notitas UWU',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple), // Define el esquema de colores basado en un color semilla (purple en este caso).
-        useMaterial3: true, // Usa el diseño de Material 3.
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        textTheme: TextTheme(
+          headlineMedium: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
       ),
-      home: const MyHomePage(title: 'Notitas UWU Home Page'), // La pantalla inicial es MyHomePage.
+      home: const MyHomePage(title: 'Notitas UWU Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title}); // Constructor de MyHomePage, que recibe un título como parámetro.
-  final String title; // Almacena el título que se pasa como argumento.
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState(); // Crea el estado asociado a MyHomePage.
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String textFromFile = 'Vacio'; // Inicializa la variable que guardará el texto que se obtendrá del archivo.
+  String textFromFile = 'Ingresa una nota para que me llenes de amor c:';
 
   getData() async {
-    // Función que lee un archivo de texto de manera asíncrona.
-    String response;
-    response = await rootBundle.loadString('archivos_texto/mis_apuntes.txt'); // Lee el archivo "mis_apuntes.txt" desde los recursos locales.
+    String response = await rootBundle.loadString('archivos_texto/mis_apuntes.txt');
     setState(() {
-      textFromFile = response; // Actualiza el estado con el contenido del archivo.
+      textFromFile = response;
     });
   }
 
   clear() {
-    // Función que limpia el texto en pantalla.
     setState(() {
-      textFromFile = 'Vacio'; // Restablece el texto a 'Vacio'.
+      textFromFile = 'Vacio';
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // Centra el contenido en el eje vertical.
-          children: [
-            Text(
-              textFromFile, // Muestra el contenido del archivo o 'Vacio' si no se ha cargado ningún texto.
-              style: Theme.of(context).textTheme.headlineMedium, // Aplica el estilo de texto según el tema de la app.
-            ),
-            ElevatedButton(
-              onPressed: () {
-                getData(); // Cuando el botón es presionado, llama a getData para cargar el archivo de texto.
-              },
-              child: const Text('Importar Notitas'), // Texto del primer botón.
-            ),
-            ElevatedButton(
-              onPressed: () {
-                clear(); // Cuando el botón es presionado, llama a clear para limpiar el texto.
-              },
-              child: const Text('Clear'), // Texto del segundo botón.
-            ),
-          ],
+      appBar: AppBar(
+        title: Text(widget.title),
+        backgroundColor: const Color.fromARGB(255, 248, 241, 245),
+        elevation: 4.0,
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0), // Añade un poco de padding alrededor
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Texto mostrado en pantalla
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  textFromFile,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+              ),
+              const SizedBox(height: 20), // Espaciado entre los widgets
+              // Botón de Importar Notitas
+              ElevatedButton.icon(
+                onPressed: () {
+                  getData();
+                },
+                icon: const Icon(Icons.import_export),
+                label: const Text('Importar Notitas'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(200, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Botón de Clear
+              ElevatedButton.icon(
+                onPressed: () {
+                  clear();
+                },
+                icon: const Icon(Icons.clear),
+                label: const Text('Borrar'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(200, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+      backgroundColor: Colors.grey[100], // Fondo de la pantalla principal
     );
   }
 }
