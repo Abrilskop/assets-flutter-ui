@@ -40,17 +40,26 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String textFromFile = 'Ingresa una nota para que me llenes de amor c:';
+  TextEditingController _controller = TextEditingController();
 
   getData() async {
     String response = await rootBundle.loadString('archivos_texto/mis_apuntes.txt');
     setState(() {
       textFromFile = response;
+      _controller.text = textFromFile; // Establecemos el contenido del archivo en el controlador
     });
   }
 
   clear() {
     setState(() {
       textFromFile = 'Vacio';
+      _controller.clear(); // Limpiamos el controlador
+    });
+  }
+
+  saveNote() {
+    setState(() {
+      textFromFile = _controller.text; // Guardamos el contenido editado en textFromFile
     });
   }
 
@@ -64,12 +73,12 @@ class _MyHomePageState extends State<MyHomePage> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0), // Añade un poco de padding alrededor
+        padding: const EdgeInsets.all(16.0),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Texto mostrado en pantalla
+              // Contenedor con texto editable
               Container(
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
@@ -83,13 +92,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ],
                 ),
-                child: Text(
-                  textFromFile,
-                  textAlign: TextAlign.center,
+                child: TextField(
+                  controller: _controller, // Controlador para editar el texto
+                  maxLines: 5, // Permite varias líneas
+                  decoration: InputDecoration(
+                    hintText: 'Escribe tu nota aquí...',
+                    border: InputBorder.none,
+                  ),
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
               ),
-              const SizedBox(height: 20), // Espaciado entre los widgets
+              const SizedBox(height: 20),
               // Botón de Importar Notitas
               ElevatedButton.icon(
                 onPressed: () {
@@ -105,7 +118,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               const SizedBox(height: 20),
-              // Botón de Clear
+              // Botón de Guardar cambios
+              ElevatedButton.icon(
+                onPressed: () {
+                  saveNote();
+                },
+                icon: const Icon(Icons.save),
+                label: const Text('Guardar Nota'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(200, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Botón de Borrar
               ElevatedButton.icon(
                 onPressed: () {
                   clear();
